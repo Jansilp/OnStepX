@@ -47,23 +47,21 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
   hw_timer_t *itimer1 = NULL;
 
   void (*HAL_HWTIMER1_FUN)() = NULL; // points to task/process callback function
-  IRAM_ATTR void HAL_HWTIMER1_WRAPPER();
+  void HAL_HWTIMER1_WRAPPER();
 
   bool HAL_HWTIMER1_INIT(uint8_t priority) {
-    // timer#, divider, count up
-    itimer1 = timerBegin(0, 5, true); // ESP32 timer frequency is 80MHz, 80/5 = 16MHz
-    timerAttachInterrupt(itimer1, &HAL_HWTIMER1_WRAPPER, true);
-    timerAlarmWrite(itimer1, 1000*16, true); // startup one millisecond
-    timerAlarmEnable(itimer1);
+    itimer1 = timerBegin(16000000); // ESP32 timer frequency is 16MHz
+    timerAttachInterrupt(itimer1, &HAL_HWTIMER1_WRAPPER);
+    timerAlarm(itimer1, 1000*16, true, 0); // startup one millisecond
     return true;
   }
 
   void HAL_HWTIMER1_DONE() {
     HAL_HWTIMER1_FUN = NULL;
-    timerAlarmDisable(itimer1);
+    timerEnd(itimer1);
   }
 
-  #define HAL_HWTIMER1_SET_PERIOD() timerAlarmWrite(itimer1, _nextPeriod1, true)
+  #define HAL_HWTIMER1_SET_PERIOD() timerAlarm(itimer1, _nextPeriod1, true, 0)
   IRAM_ATTR void HAL_HWTIMER1_WRAPPER() {
     portENTER_CRITICAL_ISR(&timerMux);
     TASKS_HWTIMER1_PROFILER_PREFIX;
@@ -81,23 +79,21 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
   hw_timer_t *itimer2 = NULL;
 
   void (*HAL_HWTIMER2_FUN)() = NULL; // points to task/process callback function
-  IRAM_ATTR void HAL_HWTIMER2_WRAPPER();
+  void HAL_HWTIMER2_WRAPPER();
 
   bool HAL_HWTIMER2_INIT(uint8_t priority) {
-    // timer#, divider, count up
-    itimer2 = timerBegin(1, 5, true); // ESP32 timer frequency is 80MHz, 80/5 = 16MHz
-    timerAttachInterrupt(itimer2, &HAL_HWTIMER2_WRAPPER, true);
-    timerAlarmWrite(itimer2, 1000*16, true); // startup one millisecond
-    timerAlarmEnable(itimer2);
+    itimer2 = timerBegin(16000000); // ESP32 timer frequency is 16MHz
+    timerAttachInterrupt(itimer2, &HAL_HWTIMER2_WRAPPER);
+    timerAlarm(itimer2, 1000*16, true, 0); // startup one millisecond
     return true;
   }
 
   void HAL_HWTIMER2_DONE() {
     HAL_HWTIMER2_FUN = NULL;
-    timerAlarmDisable(itimer2);
+    timerEnd(itimer2);
   }
   
-  #define HAL_HWTIMER2_SET_PERIOD() timerAlarmWrite(itimer2, _nextPeriod2, true)
+  #define HAL_HWTIMER2_SET_PERIOD() timerAlarm(itimer2, _nextPeriod2, true, 0)
   IRAM_ATTR void HAL_HWTIMER2_WRAPPER() {
     portENTER_CRITICAL_ISR(&timerMux);
     TASKS_HWTIMER2_PROFILER_PREFIX;
@@ -115,23 +111,21 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
   hw_timer_t *itimer3 = NULL;
 
   void (*HAL_HWTIMER3_FUN)() = NULL; // points to task/process callback function
-  IRAM_ATTR void HAL_HWTIMER3_WRAPPER();
+  void HAL_HWTIMER3_WRAPPER();
 
   bool HAL_HWTIMER3_INIT(uint8_t priority) {
-    // timer#, divider, count up
-    itimer3 = timerBegin(2, 5, true); // ESP32 timer frequency is 80MHz, 80/5 = 16MHz
-    timerAttachInterrupt(itimer3, &HAL_HWTIMER3_WRAPPER, true);
-    timerAlarmWrite(itimer3, 1000*16, true); // startup one millisecond
-    timerAlarmEnable(itimer3);
+    itimer3 = timerBegin(16000000); // ESP32 timer frequency is 16MHz
+    timerAttachInterrupt(itimer3, &HAL_HWTIMER3_WRAPPER);
+    timerAlarm(itimer3, 1000*16, true, 0); // startup one millisecond
     return true;
   }
 
   void HAL_HWTIMER3_DONE() {
     HAL_HWTIMER3_FUN = NULL;
-    timerAlarmDisable(itimer3);
+    timerEnd(itimer3);
   }
   
-  #define HAL_HWTIMER3_SET_PERIOD() timerAlarmWrite(itimer3, _nextPeriod3, true)
+  #define HAL_HWTIMER3_SET_PERIOD() timerAlarm(itimer3, _nextPeriod3, true, 0)
   IRAM_ATTR void HAL_HWTIMER3_WRAPPER() {
     portENTER_CRITICAL_ISR(&timerMux);
     TASKS_HWTIMER3_PROFILER_PREFIX;
@@ -149,23 +143,21 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
   hw_timer_t *itimer4 = NULL;
 
   void (*HAL_HWTIMER4_FUN)() = NULL; // points to task/process callback function
-  IRAM_ATTR void HAL_HWTIMER4_WRAPPER();
+  void HAL_HWTIMER4_WRAPPER();
 
   bool HAL_HWTIMER4_INIT(uint8_t priority) {
-    // timer#, divider, count up
-    itimer4 = timerBegin(3, 5, true); // ESP32 timer frequency is 80MHz, 80/5 = 16MHz
-    timerAttachInterrupt(itimer4, &HAL_HWTIMER4_WRAPPER, true);
-    timerAlarmWrite(itimer4, 1000*16, true); // startup one millisecond
-    timerAlarmEnable(itimer4);
+    itimer4 = timerBegin(16000000); // ESP32 timer frequency is 16MHz
+    timerAttachInterrupt(itimer4, &HAL_HWTIMER4_WRAPPER);
+    timerAlarm(itimer4, 1000*16, true, 0); // startup one millisecond
     return true;
   }
 
   void HAL_HWTIMER4_DONE() {
     HAL_HWTIMER4_FUN = NULL;
-    timerAlarmDisable(itimer4);
+    timerEnd(itimer4);
   }
 
-  #define HAL_HWTIMER4_SET_PERIOD() timerAlarmWrite(itimer4, _nextPeriod4, true)
+  #define HAL_HWTIMER4_SET_PERIOD() timerAlarm(itimer4, _nextPeriod4, true, 0)
   IRAM_ATTR void HAL_HWTIMER4_WRAPPER() {
     portENTER_CRITICAL_ISR(&timerMux);
     TASKS_HWTIMER4_PROFILER_PREFIX;
@@ -182,31 +174,31 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 // disable hardware timer based tasks by clearing interrupt flag(s)
 void timerAlarmsDisable() {
 #ifdef TASKS_HWTIMER1_ENABLE
-  if (itimer1 != NULL) timerAlarmDisable(itimer1);
+  if (itimer1 != NULL) timerStop(itimer1);
 #endif
 #ifdef TASKS_HWTIMER2_ENABLE
-  if (itimer2 != NULL) timerAlarmDisable(itimer2);
+  if (itimer2 != NULL) timerStop(itimer2);
 #endif
 #ifdef TASKS_HWTIMER3_ENABLE
-  if (itimer3 != NULL) timerAlarmDisable(itimer3);
+  if (itimer3 != NULL) timerStop(itimer3);
 #endif
 #ifdef TASKS_HWTIMER4_ENABLE
-  if (itimer4 != NULL) timerAlarmDisable(itimer4);
+  if (itimer4 != NULL) timerStop(itimer4);
 #endif
 }
 
 // enable hardware timer based tasks by setting interrupt flag(s)
 void timerAlarmsEnable()  {
 #ifdef TASKS_HWTIMER1_ENABLE
-  if (itimer1 != NULL) timerAlarmEnable(itimer1);
+  if (itimer1 != NULL) timerStart(itimer1);
 #endif
 #ifdef TASKS_HWTIMER2_ENABLE
-  if (itimer2 != NULL) timerAlarmEnable(itimer2);
+  if (itimer2 != NULL) timerStart(itimer2);
 #endif
 #ifdef TASKS_HWTIMER3_ENABLE
-  if (itimer3 != NULL) timerAlarmEnable(itimer3);
+  if (itimer3 != NULL) timerStart(itimer3);
 #endif
 #ifdef TASKS_HWTIMER4_ENABLE
-  if (itimer4 != NULL) timerAlarmEnable(itimer4);
+  if (itimer4 != NULL) timerStart(itimer4);
 #endif
 }

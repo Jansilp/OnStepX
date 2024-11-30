@@ -125,6 +125,7 @@ bool ServoMotor::validateParameters(float param1, float param2, float param3, fl
 // sets motor enable on/off (if possible)
 void ServoMotor::enable(bool state) {
   driver->enable(state);
+  if (state == false) feedback->reset();
   enabled = state;
 }
 
@@ -226,17 +227,18 @@ void ServoMotor::setFrequencySteps(float frequency) {
     }
 
     currentFrequency = frequency;
-    if (encoderReverse) {
-      velocityEstimate = driver->getVelocityEstimate(currentFrequency*dir);
-    } else {
-      velocityEstimate = -driver->getVelocityEstimate(currentFrequency*dir);
-    }
 
     // change the motor rate/direction
     noInterrupts();
     step = 0;
     interrupts();
     tasks.setPeriodSubMicros(taskHandle, lastPeriod);
+  }
+
+  if (encoderReverse) {
+    velocityEstimate = driver->getVelocityEstimate(currentFrequency*dir);
+  } else {
+    velocityEstimate = -driver->getVelocityEstimate(currentFrequency*dir);
   }
 
   noInterrupts();
@@ -314,15 +316,15 @@ void ServoMotor::poll() {
   velocityPercent = (driver->setMotorVelocity(velocity)/driver->getMotorControlRange()) * 100.0F;
   if (driver->getMotorDirection() == DIR_FORWARD) control->directionHint = 1; else control->directionHint = -1;
 
-  if (feedback->useVariableParameters) {
-    feedback->variableParameters(fabs(velocityPercent));
-  } else {
+  if (feedback->autoScaleParameters) {
     if (!slewing && enabled) {
       if ((long)(millis() - lastSlewingTime) > SERVO_SLEWING_TO_TRACKING_DELAY) feedback->selectTrackingParameters(); else feedback->selectSlewingParameters();
     } else {
       lastSlewingTime = millis();
       feedback->selectSlewingParameters();
     } 
+  } else {
+    feedback->variableParameters(fabs(velocityPercent));
   }
 
   // if the driver has shutdown itself we should also shutdown

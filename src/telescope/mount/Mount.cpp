@@ -156,9 +156,8 @@ void Mount::autostartPostponed() {
   // handle the one case where this completes without the date/time available
   static bool autoTrackDone = false;
   if (!autoTrackDone && TRACK_AUTOSTART == ON && transform.isEquatorial() && park.state != PS_PARKED && !home.settings.automaticAtBoot) {
-    VLF("MSG: Mount, autostart tracking sidereal");
+    VLF("MSG: Mount, autostart tracking");
     tracking(true);
-    trackingRate = hzToSidereal(SIDEREAL_RATE_HZ);
     autoStartDone = true;
     return;
   }
@@ -199,9 +198,8 @@ void Mount::autostartPostponed() {
 
   // auto tracking
   if (!autoTrackDone && TRACK_AUTOSTART == ON) {
-    VLF("MSG: Mount, autostart tracking sidereal");
+    VLF("MSG: Mount, autostart tracking");
     tracking(true);
-    trackingRate = hzToSidereal(SIDEREAL_RATE_HZ);
   }
   autoTrackDone = true;
 
@@ -258,12 +256,14 @@ void Mount::update() {
 
     float f1 = 0, f2 = 0;
     if (!guide.activeAxis1() || guide.state == GU_PULSE_GUIDE) {
-      f1 = trackingRateAxis1 + guide.rateAxis1 + pec.rate;
+      f1 = trackingRateAxis1;
+      if (transform.mountType != ALTAZM && transform.mountType != ALTALT)  f1 += guide.rateAxis1 + pec.rate;
       axis1.setFrequencyBase(siderealToRadF(f1)*SIDEREAL_RATIO_F*site.getSiderealRatio());
     }
 
     if (!guide.activeAxis2() || guide.state == GU_PULSE_GUIDE) {
-      f2 = trackingRateAxis2 + guide.rateAxis2;
+      f2 = trackingRateAxis2;
+      if (transform.mountType != ALTAZM && transform.mountType != ALTALT)  f2 += guide.rateAxis2;
       axis2.setFrequencyBase(siderealToRadF(f2)*SIDEREAL_RATIO_F*site.getSiderealRatio());
     }
 
@@ -297,9 +297,11 @@ void Mount::poll() {
   // keep track of where we are pointing
   #if MOUNT_COORDS_MEMORY == ON
     if (!goTo.absoluteEncodersPresent) {
+      nv.ignoreCache(true);
       nv.write(NV_MOUNT_LAST_POSITION, transform.mountType);
       nv.write(NV_MOUNT_LAST_POSITION + 1, (float)axis1.getInstrumentCoordinate());
       nv.write(NV_MOUNT_LAST_POSITION + 5, (float)axis2.getInstrumentCoordinate());
+      nv.ignoreCache(false);
     }
   #endif
 
@@ -362,6 +364,16 @@ void Mount::poll() {
   behind.h += trackingRateOffsetRadsRA;
   ahead.d += trackingRateOffsetRadsDec;
   behind.d -= trackingRateOffsetRadsDec;
+
+  // apply non-equatorial guide rate offset to equatorial coordinates
+  if (guide.state == GU_PULSE_GUIDE && (transform.mountType == ALTAZM || transform.mountType == ALTALT)) {
+    float trackingRateGuideRadsRA = siderealToRad(guide.rateAxis1)*timeInSeconds*2.0;
+    float trackingRateGuideRadsDec = siderealToRad(guide.rateAxis2)*timeInSeconds*2.0;
+    ahead.h += trackingRateGuideRadsRA;
+    behind.h -= trackingRateGuideRadsRA;
+    ahead.d += trackingRateGuideRadsDec;
+    behind.d -= trackingRateGuideRadsDec;
+  }
 
   // transfer to variables named appropriately for mount coordinates
   float aheadAxis1, aheadAxis2, behindAxis1, behindAxis2;
