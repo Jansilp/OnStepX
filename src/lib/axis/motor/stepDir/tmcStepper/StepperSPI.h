@@ -17,7 +17,7 @@
 #endif
 
 #ifndef TMC2130_RSENSE
-  #define TMC2130_RSENSE 0.11F
+  #define TMC2130_RSENSE 0.15F
 #endif
 
 #ifndef TMC2660_RSENSE
