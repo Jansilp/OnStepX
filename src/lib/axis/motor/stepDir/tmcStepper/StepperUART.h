@@ -21,7 +21,7 @@
 #endif
 
 #ifndef TMC2209_RSENSE
-  #define TMC2209_RSENSE 0.11F
+  #define TMC2209_RSENSE 0.15F
 #endif
 
 // default settings for any TMC UART drivers that may be present
