@@ -21,6 +21,10 @@
 #include "st4/St4.h"
 #include "status/Status.h"
 
+#if MOUNT_COORDS_MEMORY == ON && NV_ENDURANCE < NVE_VHIGH
+  #error "Configuration (Config.h): Setting MOUNT_COORDS_MEMORY requires a NV storage device with very high write endurance (FRAM)"
+#endif
+
 inline void mountWrapper() { mount.poll(); }
 inline void autostartWrapper() { mount.autostartPostponed(); }
 
@@ -119,7 +123,7 @@ void Mount::begin() {
   #endif
 
   VF("MSG: Mount, start tracking monitor task (rate 1000ms priority 6)... ");
-  if (tasks.add(1000, 0, true, 6, mountWrapper, "MntTrk")) { VLF("success"); } else { VLF("FAILED!"); }
+  if (tasks.add(1000, 0, true, 6, mountWrapper, "MtTrack")) { VLF("success"); } else { VLF("FAILED!"); }
 
   update();
   autostart();
@@ -139,8 +143,8 @@ Coordinate Mount::getMountPosition(CoordReturn coordReturn) {
 
 // handle all autostart tasks
 void Mount::autostart() {
-  tasks.setDurationComplete(tasks.getHandleByName("mnt_as"));
-  tasks.add(2000, 0, true, 7, autostartWrapper, "mnt_as");
+  tasks.setDurationComplete(tasks.getHandleByName("MtAuto"));
+  tasks.add(2000, 0, true, 7, autostartWrapper, "MtAuto");
 }
 
 void Mount::autostartPostponed() {
@@ -150,7 +154,7 @@ void Mount::autostartPostponed() {
   // stop this task if already completed
   static bool autoStartDone = false;
   if (autoStartDone) {
-    tasks.setDurationComplete(tasks.getHandleByName("mnt_as"));
+    tasks.setDurationComplete(tasks.getHandleByName("MtAuto"));
     return;
   }
 
