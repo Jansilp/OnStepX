@@ -21,7 +21,9 @@
   #define SERIAL_B_TX           5
 #endif
 
+
 // Uses default ESP32 I2C GPIO21 (SDA) and GPIO22 (SCL)
+4
 // Use the following settings for any TMC UART driver (TMC2209) that may be present
 #if defined(STEP_DIR_TMC_UART_PRESENT)
   #define SERIAL_TMC_HARDWARE_UART
